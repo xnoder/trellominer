@@ -10,6 +10,7 @@ VERSION = VERSION.__version__
 REQUIRES = [
     'requests==2.12.5',
     'openpyxl==2.4.5',
+    'ruamel.yaml==0.13.10'
 ]
 
 setup(
