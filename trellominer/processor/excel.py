@@ -8,12 +8,15 @@ from openpyxl import Workbook
 from openpyxl.styles import NamedStyle, Font, Border, Side, PatternFill
 
 from trellominer.api import trello
+from trellominer.config import yaml
 
 
 class Excel(object):
 
     def __init__(self):
-        self.filename = os.path.join(os.path.expanduser('~'), "Platform Engineering Projects {0}.xlsx".format(datetime.now().strftime("%Y-%m-%d")))
+        self.config = yaml.read(os.getenv("TRELLO_CONFIG", default=os.path.join(os.path.expanduser('~'), "trellominer.yaml")))
+        self.output_file = os.getenv("TRELLO_OUTPUT_FILE", default=self.config['api']['output_file_name'])
+        self.filename = os.path.join(os.path.expanduser('~'), "{0} {1}.xlsx".format(self.output_file, datetime.now().strftime("%Y-%m-%d")))
 
     def filename(self):
         return self.filename
@@ -34,11 +37,14 @@ class Excel(object):
 
         lookup = trello.Trello()
 
+        current_row = 6
+
         # Dump the default worksheet from the document.
         # TODO: (PS) Is there a better way to handle this?
         for sheet in wb:
             if "Sheet" in sheet.title:
                 wb.remove_sheet(sheet)
+
         for board in boards:
             if "Projects" in board['name']:
                 ws = wb.create_sheet(title="{0}".format(board['name']), index=0)
@@ -66,15 +72,45 @@ class Excel(object):
 
             cards = lookup.cards(board['shortLink'])
 
+            # Apply some default column widths to each worksheet
+            ws.column_dimensions["A"].width = 40
+            ws.column_dimensions["B"].width = 100
+            ws.column_dimensions["C"].width = 10
+            ws.column_dimensions["D"].width = 22
+            ws.column_dimensions["G"].width = 45
+
             for card in cards:
+                # TODO: Pretty slow to iterate like this. Improve.
                 listname = lookup.lists(card['idList'])
-                line = [card['name'], card['desc'], listname['name'], card['due'], card['dueComplete'], card['closed']]
+
                 member_list = ""
                 for member in card['members']:
                     member_list += "{0},".format(member['fullName'])
+                member_list.replace(',', ', ')
 
-                member_list.rstrip(',')
-                line.append(member_list)
-                ws.append(line)
+                ws["A{0}".format(current_row)] = card['name']
+                ws["A{0}".format(current_row)].style = 'Output'
+                ws["B{0}".format(current_row)] = card['desc']
+                ws["C{0}".format(current_row)] = listname['name']
+                if 'Conceptual' in listname['name']:
+                    ws["C{0}".format(current_row)].style = 'Accent5'
+                elif 'Backlog' in listname['name']:
+                    ws["C{0}".format(current_row)].style = 'Accent4'
+                elif 'In Progress' in listname['name']:
+                    ws["C{0}".format(current_row)].style = 'Accent1'
+                elif 'Impeded' in listname['name']:
+                    ws["C{0}".format(current_row)].style = 'Accent6'
+                elif 'Completed' in listname['name']:
+                    ws["C{0}".format(current_row)].style = 'Accent3'
+                elif 'Stopped' in listname['name']:
+                    ws["C{0}".format(current_row)].style = 'Accent2'
+                else:
+                    ws["C{0}".format(current_row)] = listname['name']
+                ws["D{0}".format(current_row)] = card['due']
+                ws["E{0}".format(current_row)] = card['dueComplete']
+                ws["F{0}".format(current_row)] = card['closed']
+                ws["G{0}".format(current_row)] = member_list[:-1]
+                current_row += 1
+            current_row = 6
 
         wb.save(self.filename)

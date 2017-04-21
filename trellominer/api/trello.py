@@ -13,6 +13,7 @@ class HTTP(object):
         self.api_key = os.getenv("TRELLO_API_KEY", default=self.config['api']['key'])
         self.api_token = os.getenv("TRELLO_API_TOKEN", default=self.config['api']['token'])
         self.organization = os.getenv("TRELLO_ORGANIZATION", default=self.config['api']['organization'])
+        self.output_file = os.getenv("TRELLO_OUTPUT_FILE", default=self.config['api']['output_file_name'])
 
 class Trello(HTTP):
 
