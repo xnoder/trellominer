@@ -1,0 +1,4 @@
+openpyxl==2.4.5
+requests==2.12.5
+ruamel.yaml==0.13.10
+six==1.10.0
