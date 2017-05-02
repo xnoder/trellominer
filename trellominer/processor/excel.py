@@ -49,17 +49,18 @@ class Excel(object):
             if "Projects" in board['name']:
                 ws = wb.create_sheet(title="{0}".format(board['name']), index=0)
                 ws.sheet_properties.tabColor = "0000FF"
+            elif "Break Fix" in board['name']:
+                ws = wb.create_sheet(title="{0}".format(board['name']), index=1)
+                ws.sheet_properties.tabColor = "FF0000"
+            elif "Change Control" in board['name']:
+                ws = wb.create_sheet(title="{0}".format(board['name']), index=2)
+                ws.sheet_properties.tabColor = "228B22"
             else:
-                name = board['name'][0:30]
-                ws = wb.create_sheet(title="{0}".format(name), index=None)
+                ws = wb.create_sheet(title="{0}".format(board['name'][0:30]), index=None)
             ws['A1'].style = 'highlight'
             ws['A1'] = "{0}".format(board['name'])
 
-            if board['desc']:
-                ws['A2'] = "{0}".format(board['desc'])
-            else:
-                ws['A2'] = "{0}".format('No Project Description')
-
+            ws['A2'] = ""   # was going to contain board descriptions. Trello have deprecated these, just not from the API
             ws['A3'] = "{0}".format(board['url'])
             ws['A3'].style = 'Hyperlink'
             ws['A4'] = ""
@@ -104,6 +105,14 @@ class Excel(object):
                     ws["C{0}".format(current_row)].style = 'Accent3'
                 elif 'Stopped' in listname['name']:
                     ws["C{0}".format(current_row)].style = 'Accent2'
+                elif 'Planned' in listname['name']:
+                    ws["C{0}".format(current_row)].style = 'Accent4'
+                elif 'Successful' in listname['name']:
+                    ws["C{0}".format(current_row)].style = 'Good'
+                elif 'Failed' in listname['name']:
+                    ws["C{0}".format(current_row)].style = 'Bad'
+                elif 'Cancelled' in listname['name']:
+                    ws["C{0}".format(current_row)].style = 'Neutral'
                 else:
                     ws["C{0}".format(current_row)] = listname['name']
                 ws["D{0}".format(current_row)] = card['due']
