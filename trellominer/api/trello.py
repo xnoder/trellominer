@@ -8,7 +8,7 @@ from trellominer.config import yaml
 class HTTP(object):
 
     def __init__(self):
-        self.config = yaml.read(os.getenv("TRELLO_CONFIG", default=os.path.join(os.path.expanduser('~'), "trellominer.yaml")))
+        self.config = yaml.read(os.getenv("TRELLO_CONFIG", default=os.path.join(os.path.expanduser('~'), ".trellominer.yaml")))
         self.api_url = os.getenv("TRELLO_URL", default=self.config['api']['url'])
         self.api_key = os.getenv("TRELLO_API_KEY", default=self.config['api']['key'])
         self.api_token = os.getenv("TRELLO_API_TOKEN", default=self.config['api']['token'])

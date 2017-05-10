@@ -14,7 +14,7 @@ from trellominer.config import yaml
 class Excel(object):
 
     def __init__(self):
-        self.config = yaml.read(os.getenv("TRELLO_CONFIG", default=os.path.join(os.path.expanduser('~'), "trellominer.yaml")))
+        self.config = yaml.read(os.getenv("TRELLO_CONFIG", default=os.path.join(os.path.expanduser('~'), ".trellominer.yaml")))
         self.output_file = os.getenv("TRELLO_OUTPUT_FILE", default=self.config['api']['output_file_name'])
         self.filename = os.path.join(os.path.expanduser('~'), "{0} {1}.xlsx".format(self.output_file, datetime.now().strftime("%Y-%m-%d")))
 
