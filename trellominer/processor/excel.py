@@ -65,7 +65,7 @@ class Excel(object):
             ws['A3'].style = 'Hyperlink'
             ws['A4'] = ""
 
-            headings = ["Name", "Description", "Status", "Due Date", "Complete", "Closed", "Members"]
+            headings = ["Name", "Description", "Status", "Due Date", "Complete", "Perc", "Members"]
             ws.append(headings)
             header_row = ws[5]
             for cell in header_row:
@@ -115,11 +115,32 @@ class Excel(object):
                     ws["C{0}".format(current_row)].style = 'Neutral'
                 else:
                     ws["C{0}".format(current_row)] = listname['name']
+
                 ws["D{0}".format(current_row)] = card['due']
                 ws["E{0}".format(current_row)] = card['dueComplete']
-                ws["F{0}".format(current_row)] = card['closed']
+                # ws["F{0}".format(current_row)] = card['closed']
+                tasks = 0
+                complete = 0
+                checklists = lookup.checklists(card['shortLink'])
+                for checklist in checklists:
+                    for cl in checklist['checkItems']:
+                        tasks += 1
+                        if cl['state'] == 'complete':
+                            complete += 1
+                if tasks > 0:
+                    perc = 100 * complete / tasks
+                else:
+                    perc = 0
+                ws["F{0}".format(current_row)] = "{0}%".format(perc)
+                if perc < 25:
+                    ws["F{0}".format(current_row)].style = 'Bad'
+                elif perc < 50:
+                    ws["F{0}".format(current_row)].style = 'Neutral'
+                else:
+                    ws["F{0}".format(current_row)].style = 'Good'
                 ws["G{0}".format(current_row)] = member_list[:-1]
                 current_row += 1
+
             current_row = 6
 
         wb.save(self.filename)

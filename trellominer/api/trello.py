@@ -27,12 +27,18 @@ class Trello(HTTP):
         return req.json()
 
     def cards(self, board_id):
-        url = "{0}/boards/{1}/cards?fields=name,desc,idList,due,dueComplete,closed,idMembers&members=true&member_fields=fullName&key={2}&token={3}".format(
+        url = "{0}/boards/{1}/cards?fields=shortLink,name,desc,idList,due,dueComplete,closed,idMembers&members=true&member_fields=fullName&key={2}&token={3}".format(
                 self.api_url, board_id, self.api_key, self.api_token)
         req = requests.get(url, params=None)
         return req.json()
 
     def lists(self, list_id):
         url = "{0}/lists/{1}?key={2}&token={3}".format(self.api_url, list_id, self.api_key, self.api_token)
+        req = requests.get(url, params=None)
+        return req.json()
+
+    def checklists(self, card_id):
+        url = "{0}/cards/{1}/checklists?key={2}&token={3}".format(
+                self.api_url, card_id, self.api_key, self.api_token)
         req = requests.get(url, params=None)
         return req.json()
