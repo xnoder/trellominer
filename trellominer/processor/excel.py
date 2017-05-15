@@ -100,9 +100,9 @@ class Excel(object):
                 elif 'In Progress' in listname['name']:
                     ws["C{0}".format(current_row)].style = 'Accent1'
                 elif 'Impeded' in listname['name']:
-                    ws["C{0}".format(current_row)].style = 'Accent6'
+                    ws["C{0}".format(current_row)].style = 'Bad'
                 elif 'Completed' in listname['name']:
-                    ws["C{0}".format(current_row)].style = 'Accent3'
+                    ws["C{0}".format(current_row)].style = 'Good'
                 elif 'Stopped' in listname['name']:
                     ws["C{0}".format(current_row)].style = 'Accent2'
                 elif 'Planned' in listname['name']:
@@ -113,6 +113,12 @@ class Excel(object):
                     ws["C{0}".format(current_row)].style = 'Bad'
                 elif 'Cancelled' in listname['name']:
                     ws["C{0}".format(current_row)].style = 'Neutral'
+                elif 'Course Development' in listname['name']:
+                    ws["C{0}".format(current_row)].style = 'Neutral'
+                elif 'On Training' in listname['name']:
+                    ws["C{0}".format(current_row)].style = 'Accent5'
+                elif 'Once Off Scheduled' in listname['name']:
+                    ws["C{0}".format(current_row)].style = 'Accent5'
                 else:
                     ws["C{0}".format(current_row)] = listname['name']
 
@@ -131,10 +137,10 @@ class Excel(object):
                     perc = 100 * complete / tasks
                 else:
                     perc = 0
-                ws["F{0}".format(current_row)] = "{0}%".format(perc)
+                ws["F{0}".format(current_row)] = "{0}%".format(int(perc))
                 if perc < 25:
                     ws["F{0}".format(current_row)].style = 'Bad'
-                elif perc < 50:
+                elif perc < 100:
                     ws["F{0}".format(current_row)].style = 'Neutral'
                 else:
                     ws["F{0}".format(current_row)].style = 'Good'
